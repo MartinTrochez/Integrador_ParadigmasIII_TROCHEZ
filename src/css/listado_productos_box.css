@@ -1,0 +1,82 @@
+:root {
+    --background-surface: #EFEFEF;
+    --color1: #43281C;
+    --color2: #333D29;
+    --color3: #7F4F24;
+    --color4: #B08968;
+    --color5: #DDB892;
+    --color6: #EDE0D4;
+    --color7: #832424;
+    --resaltado: #FBF2C6;
+}
+
+ul {
+  list-style: none;
+  margin-top: 1%;
+  padding: 1% 1% 5% 5%;
+}
+
+.listado-producto-box {
+  flex: 75%;
+}
+
+.contenido-box-section {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  margin: 0.85% 5% 5% 5%;
+}
+
+.contenido-box {
+  margin-top: 2%;
+}
+.contenido-box a {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  z-index: 0;
+  margin-top: 1%;
+}
+
+.contenido-box a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: .5s ease all;
+}
+
+.contenido-box a>img {transition: .5s ease all; width: 100%; object-fit:cover;}
+.contenido-box a:hover>img {
+  transform: scale(1.1);
+}
+
+.contenido>a:hover::after {opacity: 0.2;}
+
+.nombre-guitarra h5 {
+  color: var(--color7);
+  text-align: center; 
+  background-color: var(--color4);
+  margin-bottom: 2%;
+}
+
+.detalle-guitarra {
+  background: var(--color4);
+}
+
+.precio-del-producto p,
+#link-compra {
+  font-weight: bold;
+  color: var(--color7);  
+}
+
+#link-compra {
+  text-decoration: none;
+}
+
+#link-compra:hover {
+  color: var(--color6);
+}

@@ -1,0 +1,79 @@
+:root {
+    --background-surface: #EFEFEF;
+    --color1: #43281C;
+    --color2: #333D29;
+    --color3: #7F4F24;
+    --color4: #B08968;
+    --color5: #DDB892;
+    --color6: #EDE0D4;
+    --color7: #832424;
+    --resaltado: #FBF2C6;
+}
+
+main {
+    margin: auto;
+    margin-top: 86px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.contenido-tabla td>a {
+  position: relative;
+  overflow: hidden;
+  max-width: 300px;
+  z-index: 0;
+}
+
+.contenido-tabla td>a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: .5s ease all;
+}
+
+.contenido-tabla td>a>img {transition: .5s ease all; width: 100%; object-fit:cover;}
+.contenido-tabla td>a:hover>img {
+  transform: scale(1.1);
+}
+
+.container:hover::after {opacity: 0.2;}
+
+.contenedor-tabla {
+  overflow-x: auto;
+  align-items: center;
+  align-content: center;
+  vertical-align: center;
+}
+
+.tabla-producto {
+  margin: 1% 5% 0% 5%;
+}
+
+.titulo-columnas {
+  background-color: var(--color4);
+}
+
+.titulo-columnas th {
+  color: var(--color7);
+  text-align: center;
+}
+
+
+.nombre-guitarra h5 {
+  color: var(--color7);
+  text-align: center; 
+}
+
+.contenido-tabla {
+  background-color: var(--color5);
+}
+
+#link-compra {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+}
