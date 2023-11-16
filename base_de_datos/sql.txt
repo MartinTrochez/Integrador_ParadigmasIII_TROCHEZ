@@ -1,0 +1,178 @@
+create table usuarios
+(
+    id                 int primary key auto_increment,
+    nombre             varchar(50) not null,
+    email              varchar(50) not null,
+    clave              varchar(50) not null,
+    rol                varchar(50) not null check ( rol in ('admin', 'cliente') ),
+    fecha_creacion     datetime    not null,
+    fecha_modificacion datetime    not null default NOW()
+);
+
+create table productos
+(
+    id                  int primary key auto_increment,
+    nombre              varchar(50) not null,
+    descripcion         text        not null,
+    cantidad_inventario varchar(50) not null,
+    estado              varchar(50) not null check ( estado in ('eliminado', 'disponible')),
+    fecha_creacion      datetime    not null,
+    fecha_modificacion  datetime    not null default NOW()
+);
+
+create table productos_carrito
+(
+    id                 int primary key auto_increment,
+    id_usuarios        int references usuarios (id),
+    id_producto        int references productos (id),
+    cantidad           double,
+    fecha_creacion     datetime not null,
+    fecha_modificacion datetime not null                                                      default NOW(),
+    estado_compra      varchar(50) check ( estado_compra in ('no finalizado', 'finalizado') ) default 'no finalizado'
+);
+
+create table carritos
+(
+    id                  int primary key auto_increment,
+    metodo_pago         int,
+    id_usuarios         int references usuarios (id),
+    id_producto_carrito int references productos_carrito (id),
+    direccion           varchar(50) not null,
+    telefono            int         not null,
+    total_compras       double      not null,
+    fechar_creacion     datetime    not null
+);
+
+create table log_usuarios_modificado
+(
+    id               int primary key auto_increment,
+    id_usuario       int references usuarios (id),
+    razon            varchar(50) check ( razon in ('cambio nombre', 'cambio email', 'cambio email y nombre') ),
+    fecha_modificado datetime not null
+);
+
+create trigger T_usuario_modificado
+    before update
+    on usuarios
+    for each row
+begin
+    if OLD.nombre != NEW.nombre then
+        insert into log_usuarios_modificado(id_usuario, razon, fecha_modificado)
+        values (NEW.id, 'cambio nombre', NOW());
+    end if;
+    if OLD.email != NEW.email then
+        insert into log_usuarios_modificado(id_usuario, razon, fecha_modificado)
+        values (NEW.id, 'cambio email', NOW());
+    end if;
+end;
+
+create procedure P_sumas_acumuladas()
+begin
+    declare ventas_acumuladas double default 0;
+    declare id_carrito int default 0;
+    declare auxiliar double default 0;
+    declare no_more_rows boolean default false;
+    declare cursor_ventas cursor for select id, total_compras from carritos;
+    declare continue handler for not found set no_more_rows = true;
+    open cursor_ventas;
+    begin
+        read_loop:
+        Loop
+            fetch cursor_ventas into id_carrito, auxiliar;
+            if no_more_rows then
+                leave read_loop;
+            end if;
+            set ventas_acumuladas = ventas_acumuladas + auxiliar;
+            select c.id, u.nombre, c.fecha_creacion, c.total_compras, ventas_acumuladas as ventas_acumuladas
+            from carritos c
+                     inner join usuarios u on c.id_usuarios = u.id
+            where c.id = id_carrito;
+        end loop;
+        close cursor_ventas;
+    end;
+end;
+
+delimiter //
+SELECT u.id, u.nombre, u.rol, u.email, l.razon, l.fecha_modificado
+FROM usuarios u
+         INNER JOIN log_usuarios_modificado l on u.id = l.id_usuario;
+create procedure P_insertar_usuarios()
+begin
+    declare i int default 1;
+    while i <= 20
+        do
+            insert into usuarios (nombre, email, clave, rol, fecha_creacion)
+            values (concat('usuario', i), concat('usuario', i, '@gmail.com'), '123', 'cliente', now());
+            set i = i + 1;
+        end while;
+end //
+delimiter ;
+
+create view v_cantidad_tipos_pagos_realizados as
+select u.id,
+       u.nombre,
+       u.email,
+       u.rol,
+       coalesce(pago_debito, 0)      as pago_debito,
+       coalesce(pago_credito, 0)     as pago_credito,
+       coalesce(cantidad_compras, 0) as cantidad_compras,
+       coalesce(total_compras, 0)    as total_compras
+from usuarios u
+         left join (select id_usuarios,
+                           count(*) as pago_debito
+                    from carritos
+                    where metodo_pago = 'debito'
+                    group by id_usuarios) debito on u.id = debito.id_usuarios
+
+         left join (select id_usuarios,
+                           count(*) as pago_credito
+                    from carritos
+                    where metodo_pago = 'credito'
+                    group by id_usuarios) credito on u.id = credito.id_usuarios
+
+         left join (select id_usuarios,
+                           count(*)           as cantidad_compras,
+                           sum(total_compras) as total_compras
+                    from carritos
+                    group by id_usuarios) carritos_info on u.id = carritos_info.id_usuarios;
+
+insert into usuarios(nombre, email, clave, rol, fecha_creacion)
+values ('martin', 'martin@gmail.com', 123, 'admin', NOW()),
+       ('asd', 'asd@gmail.com', 123, 'cliente', NOW());
+
+
+
+call P_insertar_usuarios();
+
+INSERT INTO integrador_paradigmas.productos (nombre, descripcion, cantidad_inventario, estado, fecha_creacion)
+VALUES ('Fender Stratocaster Blanca',
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        '10', 'disponible', NOW());
+
+
+ALTER TABLE integrador_paradigmas.carritos
+    ENGINE = InnoDB;
+ALTER TABLE integrador_paradigmas.usuarios
+    ENGINE = InnoDB;
+AlTER TABLE integrador_paradigmas.productos_carrito
+    ENGINE = InnoDB;
+ALTER TABLE integrador_paradigmas.productos
+    ENGINE = InnoDB;
+ALTER TABLE integrador_paradigmas.v_cantidad_tipos_pagos_realizados
+    ENGINE = InnoDB;
+ALTER TABLE integrador_paradigmas.log_usuarios_modificado
+    ENGINE = InnoDB;
+
+SELECT c.id, c.id_producto, c.cantidad, p.nombre, p.precio
+FROM productos_carrito c
+         JOIN productos p ON c.id_producto = p.id
+         join usuarios u on c.id_usuarios = u.id
+WHERE p.estado = 'disponible'
+  AND c.estado_compra = 'no finalizado'
+  and c.id_usuarios
+  and u.id;
+insert into productos_carrito(id_usuarios, id_producto, cantidad, fecha_creacion)
+values (1, 1, 1, NOW());
+select *
+from productos;
+
