@@ -708,6 +708,10 @@ video {
   flex-basis: 50%;
 }
 
+.basis-1\/4 {
+  flex-basis: 25%;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
@@ -742,6 +746,10 @@ video {
 
 .justify-between {
   justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
 }
 
 .justify-evenly {

@@ -130,7 +130,7 @@ if (isset($_POST['eliminar_producto'])) {
         </tbody>
       </table>
       <p class="text-sm font-bold text-color7 end-0">
-        <a href="index.php?modulo=formulario&id=<?php $_SESSION['id']; ?>&formulario=ir_formulario&total_compras=<?php echo $totalCompras ?>" class="mx-auto my-auto text-color4 hover:text-color7">Continuar</a>
+        <a class="flex items-center justify-center" href="index.php?modulo=formulario&id=<?php $_SESSION['id']; ?>&formulario=ir_formulario&total_compras=<?php echo $totalCompras ?>" class="mx-auto my-auto text-color4 hover:text-color7">Continuar</a>
       </p>
     <?php
     }

@@ -135,7 +135,27 @@ conectar();
     include('./src/modulos/' . $_GET['modulo'] . '.php');
   } else {
   ?>
-    <p>asdasd</p>
+    <main class="mt-3 mb-3 min-h-screen">
+      <section class="flex flex-wrap justify-around items-center">
+        <div class="owl-carousel owl-theme flex align-content basis-1/4">
+          <div class="item" style="width: 200px">
+            <img src="./src/imagenes/guitar-icon-13.jpg" alt="" style="background-color: red">
+          </div>
+          <div class="item" style="width: 200px">
+            <img src="./src/imagenes/guitar-icon-13.jpg" alt="" style="background-color: blue">
+          </div>
+          <div class="item" style="width: 200px">
+            <img src="./src/imagenes/guitar-icon-13.jpg" alt="" style="background-color: green">
+          </div>
+          <div class="item" style="width: 200px">
+            <img src="./src/imagenes/guitar-icon-13.jpg" alt="" style="background-color: white">
+          </div>
+          <div class="item" style="width: 200px">
+            <img src="./src/imagenes/guitar-icon-13.jpg" alt="" style="background-color: brown">
+          </div>
+        </div>
+      </section>
+    </main>
   <?php
   }
   ?>
